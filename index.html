@@ -13,23 +13,17 @@
   :root{--gold:#FFD700;--red:#E8352A;--orange:#F97316;--orange-dark:#EA6C0A;--pink-bg:#FF6EB4;--super:#9B59B6;--cold:#4ECDC4;}
   body{font-family:'Microsoft JhengHei','PingFang TC','Noto Sans TC',sans-serif;background:#1a1a2e;min-height:100vh;display:flex;justify-content:center;padding:0 0 40px 0;}
   #app{width:100%;max-width:540px;}
-
   .top-section{background:#0a0a12;padding:20px 16px 14px;}
   h1{font-family:Impact,'Arial Black',sans-serif;font-size:36px;letter-spacing:5px;color:var(--gold);text-align:center;margin:0 0 2px;text-shadow:0 0 24px rgba(255,215,0,0.5);}
   .subtitle{text-align:center;font-size:11px;color:#555;margin-bottom:16px;letter-spacing:3px;}
-
   .pwa-hint{background:#0d0d1a;border:1px solid #1e1e3a;border-radius:8px;padding:8px 12px;margin-bottom:10px;font-size:10px;color:#555;text-align:center;display:none;}
   .pwa-hint.show{display:block;}
-
-  /* Period info bar */
   .period-bar{background:#0d0d1a;border:1px solid #1e1e3a;border-radius:10px;padding:10px 14px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;}
   .period-info{font-size:11px;color:#666;}
   .period-info b{color:var(--gold);}
   .period-status{font-size:10px;padding:3px 8px;border-radius:10px;font-weight:700;}
   .period-status.open{background:rgba(78,205,196,.15);color:var(--cold);border:1px solid rgba(78,205,196,.3);}
   .period-status.closed{background:rgba(100,100,100,.15);color:#555;border:1px solid #222;}
-
-  /* Auto fetch box */
   .auto-box{background:#0d0d1a;border:1px solid #1e1e3a;border-radius:10px;padding:14px;margin-bottom:10px;}
   .auto-title{font-size:11px;color:#666;letter-spacing:1px;margin-bottom:10px;}
   .auto-btn{width:100%;padding:13px;border:none;border-radius:8px;background:var(--gold);color:#000;font-size:15px;font-weight:700;cursor:pointer;font-family:'Microsoft JhengHei','PingFang TC',sans-serif;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .2s;}
@@ -42,16 +36,13 @@
   .auto-countdown{font-size:10px;color:#333;text-align:center;margin-top:4px;min-height:14px;}
   @keyframes spin{to{transform:rotate(360deg);}}
   .spinner{display:inline-block;width:16px;height:16px;border:2px solid #333;border-top-color:var(--gold);border-radius:50%;animation:spin .7s linear infinite;}
-
   .manual-toggle{font-size:11px;color:#333;text-align:center;cursor:pointer;padding:7px;margin-bottom:8px;border:1px dashed #1e1e2e;border-radius:6px;}
   .manual-toggle:hover{color:#666;border-color:#333;}
   .manual-section{display:none;}
   .manual-section.open{display:block;}
-
   .input-tabs{display:flex;gap:0;margin-bottom:10px;border-radius:8px;overflow:hidden;border:1px solid #1e1e3a;}
   .input-tab{flex:1;padding:8px;background:#0d0d1a;color:#555;font-size:12px;font-weight:700;cursor:pointer;border:none;font-family:'Microsoft JhengHei','PingFang TC',sans-serif;transition:all .2s;}
   .input-tab.active{background:var(--orange);color:#fff;}
-
   .bookmarklet-box{background:#0d0d1a;border:1px solid #1e1e3a;border-radius:10px;padding:12px;margin-bottom:10px;}
   .bm-title{font-size:11px;color:#666;letter-spacing:1px;margin-bottom:8px;}
   .bm-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
@@ -59,7 +50,6 @@
   .bm-drag:hover{background:var(--orange-dark);}
   .bm-tip{font-size:10px;color:#444;line-height:1.8;}
   .bm-tip a{color:var(--cold);text-decoration:none;}
-
   .manual-box{background:#0d0d1a;border:1px solid #1e1e3a;border-radius:10px;padding:12px;margin-bottom:10px;}
   .manual-title{font-size:11px;color:#666;letter-spacing:1px;margin-bottom:10px;}
   .manual-link{display:block;text-align:center;background:#0a3a4a;color:var(--cold);padding:8px;border-radius:8px;font-size:12px;font-weight:700;text-decoration:none;margin-bottom:10px;border:1px solid rgba(78,205,196,0.3);}
@@ -76,18 +66,15 @@
   .super-toggle{display:flex;align-items:center;gap:8px;font-size:11px;color:#666;margin-bottom:8px;}
   .super-toggle input{accent-color:var(--super);}
   .add-btn{background:var(--gold);color:#000;border:none;border-radius:6px;padding:9px 0;font-size:13px;font-weight:700;cursor:pointer;width:100%;font-family:'Microsoft JhengHei','PingFang TC',sans-serif;}
-
   .paste-box{background:#0d0d1a;border:1px solid #1e1e2e;border-radius:10px;padding:12px;margin-bottom:10px;}
   .paste-title{font-size:11px;color:#666;letter-spacing:1px;margin-bottom:8px;}
   .paste-area{width:100%;background:#111122;border:1px solid #2a2a4a;border-radius:6px;color:#ccc;padding:8px;font-size:11px;font-family:monospace;resize:none;height:76px;}
   .paste-area:focus{outline:none;border-color:var(--gold);}
   .paste-area::placeholder{color:#2a2a4a;font-size:10px;line-height:1.7;}
   .parse-btn{background:var(--gold);color:#000;border:none;border-radius:6px;padding:8px 0;font-size:12px;font-weight:700;cursor:pointer;margin-top:6px;width:100%;font-family:'Microsoft JhengHei','PingFang TC',sans-serif;}
-
   .msg{font-size:10px;margin-top:5px;min-height:14px;}
   .msg.err{color:#ff6b6b;}
   .msg.ok{color:var(--cold);}
-
   .draws-title{font-size:11px;color:#444;letter-spacing:2px;margin-bottom:6px;display:flex;align-items:center;gap:8px;}
   .btn-sm{background:none;border:1px solid #1e1e2e;color:#333;border-radius:5px;padding:2px 8px;font-size:10px;cursor:pointer;}
   .btn-sm:hover{color:#666;border-color:#333;}
@@ -102,18 +89,15 @@
   .ball.super{background:var(--super);color:#fff;}
   .empty-card{color:#2a2a3a;font-size:11px;text-align:center;padding:14px 0;}
   .source-note{font-size:9px;color:#222;text-align:right;margin-top:3px;padding-bottom:4px;}
-
   .bottom-section{background:#5a6a7d;padding:14px 16px 28px;}
   .legend{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;font-size:11px;}
   .legend-item{display:flex;align-items:center;gap:4px;color:#dde4ec;}
   .dot{width:9px;height:9px;border-radius:50%;}
-
   .grid{display:grid;grid-template-columns:repeat(10,1fr);gap:4px;margin-bottom:14px;}
   .num-btn{aspect-ratio:1;border:none;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;transition:all .12s;display:flex;align-items:center;justify-content:center;background:#3e4e5e;color:#c0cad4;}
   .num-btn:active{transform:scale(.92);}
   .num-btn.selected{background:var(--gold)!important;color:#000!important;transform:scale(1.08);}
   .num-btn.disabled{opacity:.3;cursor:not-allowed;}
-
   .selected-display{background:rgba(0,0,0,.2);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:12px;min-height:60px;margin-bottom:12px;}
   .selected-title{font-size:11px;color:#c0cad4;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;}
   .sel-count-bar{display:flex;gap:3px;}
@@ -124,7 +108,6 @@
   .sel-normal{background:var(--gold);color:#000;}
   .sel-prev{background:var(--pink-bg);color:#fff;}
   .sel-super{background:var(--super);color:#fff;}
-
   .btn-row{display:flex;gap:8px;margin-bottom:12px;}
   .btn{flex:1;padding:11px;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;transition:all .2s;font-family:'Microsoft JhengHei','PingFang TC',sans-serif;}
   .btn-gold{background:var(--gold);color:#000;}.btn-gold:active{background:#e6c200;}
@@ -141,16 +124,14 @@
     <div class="subtitle">台彩賓果賓果 · 選號工具</div>
     <div class="pwa-hint" id="pwa-hint"></div>
 
-    <!-- 期號資訊列 -->
     <div class="period-bar">
       <div class="period-info">
         台灣時間 <b id="tw-clock">--:--:--</b>　
-        當前期號 <b id="curr-period">計算中...</b>
+        最新已開獎 <b id="curr-period">計算中...</b>
       </div>
       <div class="period-status" id="open-status">--</div>
     </div>
 
-    <!-- 自動抓取 -->
     <div class="auto-box">
       <div class="auto-title">🚀 自動抓取最新2期開獎（台彩官方資料）</div>
       <button class="auto-btn" id="auto-btn" onclick="autoFetch()">
@@ -160,7 +141,6 @@
       <div class="auto-countdown" id="auto-countdown"></div>
     </div>
 
-    <!-- 手動輸入 -->
     <div class="manual-toggle" onclick="toggleManualSection()">
       ✏️ 手動輸入開獎號碼 <span id="manual-arrow">▼</span>
     </div>
@@ -200,7 +180,7 @@
         <div class="paste-box">
           <div class="paste-title">📋 貼上書籤複製的內容</div>
           <textarea class="paste-area" id="paste-input"
-            placeholder="PERIOD:115015569&#10;NUMBERS:2,6,11,...&#10;SUPER:28&#10;---&#10;PERIOD:115015568&#10;NUMBERS:4,21,...&#10;SUPER:42"></textarea>
+            placeholder="PERIOD:115015571&#10;NUMBERS:2,6,11,...&#10;SUPER:28&#10;---&#10;PERIOD:115015570&#10;NUMBERS:4,21,...&#10;SUPER:42"></textarea>
           <div id="parse-msg" class="msg"></div>
           <button class="parse-btn" onclick="parseInput()">✅ 解析並載入</button>
         </div>
@@ -242,46 +222,71 @@
 const MAX_PICK = 10;
 
 // ── 期號計算 ──
-// 定位點：2026/03/18 07:05 台灣時間 = 第 115015429 期
-// UTC: 2026/03/17 23:05
-const ANCHOR_PERIOD = 115015429;
-const ANCHOR_UTC_MS = Date.UTC(2026, 2, 17, 23, 5, 0); // 2026-03-17 23:05 UTC
+// 定位點：2026/03/18 18:55 台灣時間 = 第 115015571 期（已驗證）
+// 用已知兩點反推：
+//   07:05 = 115015429
+//   18:55 = 115015571（差140期，差700分鐘，正確）
+// 直接用 Unix timestamp 計算，避免時區問題
+// 2026/03/18 18:55 台灣時間 = 2026/03/18 10:55 UTC
+const ANCHOR_PERIOD = 115015571;
+const ANCHOR_UTC_MS = Date.UTC(2026, 2, 18, 10, 55, 0); // 2026-03-18 10:55 UTC = 18:55 台灣
 const MS_PER_PERIOD = 5 * 60 * 1000;
-const OPEN_START = 7 * 60 + 5;   // 07:05 台灣時間（分鐘）
-const OPEN_END   = 23 * 60 + 55; // 23:55 台灣時間（分鐘）
+const OPEN_START_MIN = 7 * 60 + 5;   // 07:05
+const OPEN_END_MIN   = 23 * 60 + 55; // 23:55
 
 function getTWNow(){
+  // 台灣 UTC+8
   const now = new Date();
   return new Date(now.getTime() + (now.getTimezoneOffset() + 480) * 60000);
 }
 
-function calcCurrentPeriod(){
-  const twNow = getTWNow();
-  const diffMs = twNow.getTime() - (ANCHOR_UTC_MS + 8 * 3600000);
-  return ANCHOR_PERIOD + Math.floor(diffMs / MS_PER_PERIOD);
+function getTWUTCMs(){
+  // 返回台灣時間對應的 UTC 毫秒（直接用系統時間 + 時區補償）
+  const now = new Date();
+  return now.getTime() + (now.getTimezoneOffset() + 480) * 60000;
 }
 
-function periodToTWTime(period){
-  const ms = ANCHOR_UTC_MS + 8 * 3600000 + (period - ANCHOR_PERIOD) * MS_PER_PERIOD;
-  const d = new Date(ms);
-  return `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+// 計算最新已開獎期號（當前時間對應的期，但開獎在整點5分，需減1）
+// 規則：每期在 hh:05, hh:10... 開獎，所以當前時間所在的期還未開獎
+// 例：18:56 → 當前是18:56這期，但18:56還沒到下一個整5分，
+// 最新已開獎是 18:55 這期
+function calcLatestDrawnPeriod(){
+  const twUtcMs = getTWUTCMs();
+  // 對應到期號時間：ANCHOR_UTC_MS 對應 ANCHOR_PERIOD
+  // 注意：期號的時間是"開獎時間"，18:55的期 = 18:55開獎
+  // 所以現在18:56，18:55已開獎 → floor後就是18:55那期
+  const diffMs = twUtcMs - ANCHOR_UTC_MS;
+  const diffPeriods = Math.floor(diffMs / MS_PER_PERIOD);
+  return ANCHOR_PERIOD + diffPeriods;
+}
+
+function periodToTimeStr(period){
+  const ms = ANCHOR_UTC_MS + (period - ANCHOR_PERIOD) * MS_PER_PERIOD;
+  const d = new Date(ms - (new Date().getTimezoneOffset() + 480) * 60000 + (new Date().getTimezoneOffset() + 480) * 60000);
+  // 直接用 UTC+8 offset
+  const twMs = ms;
+  const h = Math.floor((twMs % (24*3600000)) / 3600000);
+  const m = Math.floor((twMs % 3600000) / 60000);
+  return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
 }
 
 function isOpenNow(){
   const tw = getTWNow();
   const t = tw.getHours() * 60 + tw.getMinutes();
-  return t >= OPEN_START && t <= OPEN_END;
+  return t >= OPEN_START_MIN && t <= OPEN_END_MIN;
 }
 
-// 時鐘更新
+// 時鐘
 function updateClock(){
   const tw = getTWNow();
-  const timeStr = `${String(tw.getHours()).padStart(2,'0')}:${String(tw.getMinutes()).padStart(2,'0')}:${String(tw.getSeconds()).padStart(2,'0')}`;
-  document.getElementById('tw-clock').textContent = timeStr;
+  document.getElementById('tw-clock').textContent =
+    `${String(tw.getHours()).padStart(2,'0')}:${String(tw.getMinutes()).padStart(2,'0')}:${String(tw.getSeconds()).padStart(2,'0')}`;
 
   const open = isOpenNow();
-  const period = calcCurrentPeriod();
-  document.getElementById('curr-period').textContent = open ? period : `${period}（非開盤）`;
+  const latest = calcLatestDrawnPeriod();
+  document.getElementById('curr-period').textContent = open
+    ? `第 ${latest} 期`
+    : `第 ${latest} 期（非開盤）`;
 
   const statusEl = document.getElementById('open-status');
   statusEl.textContent = open ? '🟢 開盤中' : '⛔ 未開盤';
@@ -290,7 +295,7 @@ function updateClock(){
 setInterval(updateClock, 1000);
 updateClock();
 
-// ── PWA hint ──
+// PWA
 window.addEventListener('load', () => {
   const hint = document.getElementById('pwa-hint');
   const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
@@ -302,7 +307,7 @@ window.addEventListener('load', () => {
   }
 });
 
-// ── 自動抓取（台彩官方 API）──
+// ── 自動抓取 ──
 let fetchTimer = null;
 
 async function autoFetch(){
@@ -317,28 +322,22 @@ async function autoFetch(){
   countdown.textContent = '';
 
   try {
-    const curPeriod = calcCurrentPeriod();
-    // 抓最近已開獎的2期（當前期 - 1 和 - 2）
-    const periods = isOpenNow()
-      ? [curPeriod - 1, curPeriod - 2]
-      : [curPeriod, curPeriod - 1];
-
+    const latestPeriod = calcLatestDrawnPeriod();
+    const periods = [latestPeriod, latestPeriod - 1];
     const draws = [];
+
     for(const period of periods){
       const url = `https://api.taiwanlottery.com/TLCAPIWeB/Lottery/BingoBingo?period=${period}`;
       const resp = await fetch(url, {
         headers:{ 'Accept':'application/json', 'Referer':'https://www.taiwanlottery.com/' }
       });
-      if(!resp.ok) throw new Error(`期號 ${period} 查詢失敗 HTTP ${resp.status}`);
+      if(!resp.ok) throw new Error(`期號 ${period} HTTP ${resp.status}`);
       const data = await resp.json();
-
-      // 解析台彩 API 回傳格式
       const draw = parseTaiwanAPI(data, period);
       if(draw) draws.push(draw);
     }
 
-    if(!draws.length) throw new Error('無法解析開獎資料');
-
+    if(!draws.length) throw new Error('無法解析開獎資料，請查看 Console');
     loadDraws(draws);
     status.className = 'auto-status ok';
     status.textContent = `✅ 成功！第 ${draws.map(d=>d.period).join('、')} 期`;
@@ -348,7 +347,6 @@ async function autoFetch(){
     status.className = 'auto-status err';
     status.textContent = `❌ ${e.message}`;
     countdown.textContent = '請展開下方手動輸入';
-    console.error(e);
   } finally {
     btn.disabled = false;
     btnText.textContent = '⚡ 立即抓取最新2期開獎';
@@ -356,45 +354,45 @@ async function autoFetch(){
 }
 
 function parseTaiwanAPI(data, period){
-  // 台彩 API 可能的格式，嘗試多種結構
   try {
-    // 格式1: data.content 或 data.data
     const content = data.content || data.data || data;
     const arr = Array.isArray(content) ? content : [content];
     const item = arr[0];
     if(!item) return null;
 
-    // 找號碼欄位
     let numbers = [];
     let superNum = null;
 
-    // 嘗試各種欄位名稱
-    const numFields = ['no1','no2','no3','no4','no5','no6','no7','no8','no9','no10',
-                       'no11','no12','no13','no14','no15','no16','no17','no18','no19','no20'];
-    numFields.forEach(f => { if(item[f]) numbers.push(parseInt(item[f])); });
+    // 嘗試 no1~no20 格式
+    for(let i=1;i<=20;i++){
+      const v = item[`no${i}`] || item[`num${i}`] || item[`ball${i}`];
+      if(v) numbers.push(parseInt(v));
+    }
 
+    // 嘗試陣列格式
     if(!numbers.length){
-      // 嘗試陣列格式
-      if(item.drawNumbers) numbers = item.drawNumbers.map(Number);
-      else if(item.balls) numbers = item.balls.map(Number);
-      else if(item.numbers) numbers = item.numbers.map(Number);
+      if(Array.isArray(item.drawNumbers)) numbers = item.drawNumbers.map(Number);
+      else if(Array.isArray(item.balls)) numbers = item.balls.map(Number);
+      else if(Array.isArray(item.numbers)) numbers = item.numbers.map(Number);
+      else if(Array.isArray(item.lotteryNumbers)) numbers = item.lotteryNumbers.map(Number);
     }
 
     // 超級號碼
-    if(item.superNo) superNum = parseInt(item.superNo);
-    else if(item.superNumber) superNum = parseInt(item.superNumber);
-    else if(item.specialNo) superNum = parseInt(item.specialNo);
+    const superFields = ['superNo','superNumber','specialNo','superBall','superNum'];
+    for(const f of superFields){
+      if(item[f]){ superNum = parseInt(item[f]); break; }
+    }
 
     if(numbers.length !== 20) return null;
 
     return {
-      period: String(item.period || item.lotteryPeriod || period),
-      datetime: periodToTWTime(period),
+      period: String(item.period || item.lotteryPeriod || item.issueNo || period),
+      datetime: periodToTimeStr(period),
       numbers: numbers.sort((a,b)=>a-b),
-      superNum,
-      raw: JSON.stringify(item).substring(0,200) // debug用
+      superNum
     };
   } catch(e) {
+    console.error('parseTaiwanAPI error:', e, data);
     return null;
   }
 }
@@ -416,14 +414,12 @@ function startCountdown(){
   }, 1000);
 }
 
-// ── 手動輸入 ──
 function toggleManualSection(){
   const sec = document.getElementById('manual-section');
   const arrow = document.getElementById('manual-arrow');
   sec.classList.toggle('open');
   arrow.textContent = sec.classList.contains('open') ? '▲' : '▼';
 }
-
 function switchInputTab(tab){
   ['pc','mobile','paste'].forEach(t=>{
     document.getElementById('tab-'+t).classList.toggle('active',t===tab);
@@ -431,7 +427,6 @@ function switchInputTab(tab){
   });
 }
 
-// Bookmarklet v4
 const bmCode=`(function(){
   var wrapper=document.querySelector('#drawGridWrapper');
   if(!wrapper){alert('找不到 #drawGridWrapper');return;}
@@ -463,7 +458,6 @@ const bmCode=`(function(){
 })();`;
 document.getElementById('bm-link').href='javascript:'+encodeURIComponent(bmCode);
 
-// ── 資料 ──
 let selected=new Set(), prevDrawNums=new Set(), prevSuperNum=null, recentDraws=[];
 
 function loadDraws(draws){
@@ -473,7 +467,6 @@ function loadDraws(draws){
   renderDraws();buildPickGrid();updateSelected();
 }
 
-// ── 手動格子 ──
 let manualChosen=new Set(), manualSuper=null;
 function buildManualGrid(){
   const g=document.getElementById('manual-grid');g.innerHTML='';
@@ -510,7 +503,6 @@ function addManualDraw(){
 }
 buildManualGrid();
 
-// ── 貼上解析 ──
 function parseBlock(text){
   const pm=text.match(/PERIOD\s*:\s*(\d*)/),nm=text.match(/NUMBERS\s*:\s*([\d,]+)/),sm=text.match(/SUPER\s*:\s*(\d*)/);
   if(!nm)return null;
