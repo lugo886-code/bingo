@@ -10,118 +10,77 @@
 <title>BINGO BINGO 選號工具</title>
 <style>
   *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
-  :root{
-    --gold:#FFD700;--red:#E8352A;--orange:#F97316;--orange-dark:#EA6C0A;
-    --pink-bg:#FF6EB4;--super:#9B59B6;--cold:#4ECDC4;
-  }
-  body{
-    font-family:'Microsoft JhengHei','PingFang TC','Noto Sans TC',sans-serif;
-    background:#1a1a2e;min-height:100vh;
-    display:flex;justify-content:center;
-    padding:0 0 40px 0;
-  }
+  :root{--gold:#FFD700;--red:#E8352A;--orange:#F97316;--orange-dark:#EA6C0A;--pink-bg:#FF6EB4;--super:#9B59B6;--cold:#4ECDC4;}
+  body{font-family:'Microsoft JhengHei','PingFang TC','Noto Sans TC',sans-serif;background:#1a1a2e;min-height:100vh;display:flex;justify-content:center;padding:0 0 40px 0;}
   #app{width:100%;max-width:540px;}
 
-  /* TOP */
   .top-section{background:#0a0a12;padding:20px 16px 14px;}
-  h1{
-    font-family:Impact,'Arial Black',sans-serif;
-    font-size:36px;letter-spacing:5px;color:var(--gold);text-align:center;
-    margin:0 0 2px;text-shadow:0 0 24px rgba(255,215,0,0.5);
-  }
+  h1{font-family:Impact,'Arial Black',sans-serif;font-size:36px;letter-spacing:5px;color:var(--gold);text-align:center;margin:0 0 2px;text-shadow:0 0 24px rgba(255,215,0,0.5);}
   .subtitle{text-align:center;font-size:11px;color:#555;margin-bottom:16px;letter-spacing:3px;}
 
-  /* Tabs for input method */
+  .pwa-hint{background:#0d0d1a;border:1px solid #1e1e3a;border-radius:8px;padding:8px 12px;margin-bottom:10px;font-size:10px;color:#555;text-align:center;display:none;}
+  .pwa-hint.show{display:block;}
+
+  /* Auto fetch box */
+  .auto-box{background:#0d0d1a;border:1px solid #1e1e3a;border-radius:10px;padding:14px;margin-bottom:10px;}
+  .auto-title{font-size:11px;color:#666;letter-spacing:1px;margin-bottom:10px;}
+  .auto-btn{width:100%;padding:13px;border:none;border-radius:8px;background:var(--gold);color:#000;font-size:15px;font-weight:700;cursor:pointer;font-family:'Microsoft JhengHei','PingFang TC',sans-serif;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .2s;}
+  .auto-btn:hover{background:#e6c200;}
+  .auto-btn:disabled{background:#333;color:#666;cursor:not-allowed;}
+  .auto-status{font-size:11px;margin-top:8px;text-align:center;min-height:16px;color:#555;}
+  .auto-status.ok{color:var(--cold);}
+  .auto-status.err{color:#ff6b6b;}
+  .auto-status.loading{color:var(--orange);}
+  .auto-countdown{font-size:10px;color:#333;text-align:center;margin-top:4px;min-height:14px;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  .spinner{display:inline-block;width:16px;height:16px;border:2px solid #333;border-top-color:var(--gold);border-radius:50%;animation:spin .7s linear infinite;}
+
+  /* Manual toggle */
+  .manual-toggle{font-size:11px;color:#333;text-align:center;cursor:pointer;padding:7px;margin-bottom:8px;border:1px dashed #1e1e2e;border-radius:6px;}
+  .manual-toggle:hover{color:#666;border-color:#333;}
+  .manual-section{display:none;}
+  .manual-section.open{display:block;}
+
   .input-tabs{display:flex;gap:0;margin-bottom:10px;border-radius:8px;overflow:hidden;border:1px solid #1e1e3a;}
-  .input-tab{
-    flex:1;padding:8px;background:#0d0d1a;color:#555;
-    font-size:12px;font-weight:700;cursor:pointer;border:none;
-    font-family:'Microsoft JhengHei','PingFang TC',sans-serif;
-    transition:all .2s;
-  }
+  .input-tab{flex:1;padding:8px;background:#0d0d1a;color:#555;font-size:12px;font-weight:700;cursor:pointer;border:none;font-family:'Microsoft JhengHei','PingFang TC',sans-serif;transition:all .2s;}
   .input-tab.active{background:var(--orange);color:#fff;}
 
-  /* Bookmarklet (PC) */
   .bookmarklet-box{background:#0d0d1a;border:1px solid #1e1e3a;border-radius:10px;padding:12px;margin-bottom:10px;}
   .bm-title{font-size:11px;color:#666;letter-spacing:1px;margin-bottom:8px;}
   .bm-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
-  .bm-drag{
-    display:inline-block;background:var(--orange);color:#fff;
-    padding:7px 16px;border-radius:20px;font-size:12px;font-weight:700;
-    cursor:grab;text-decoration:none;
-    border:2px dashed rgba(255,255,255,0.35);white-space:nowrap;
-  }
+  .bm-drag{display:inline-block;background:var(--orange);color:#fff;padding:7px 16px;border-radius:20px;font-size:12px;font-weight:700;cursor:grab;text-decoration:none;border:2px dashed rgba(255,255,255,0.35);white-space:nowrap;}
   .bm-drag:hover{background:var(--orange-dark);}
   .bm-tip{font-size:10px;color:#444;line-height:1.8;}
   .bm-tip a{color:var(--cold);text-decoration:none;}
 
-  /* Manual input (Mobile) */
   .manual-box{background:#0d0d1a;border:1px solid #1e1e3a;border-radius:10px;padding:12px;margin-bottom:10px;}
   .manual-title{font-size:11px;color:#666;letter-spacing:1px;margin-bottom:10px;}
-  .manual-link{
-    display:block;text-align:center;background:#0a3a4a;
-    color:var(--cold);padding:8px;border-radius:8px;
-    font-size:12px;font-weight:700;text-decoration:none;margin-bottom:10px;
-    border:1px solid rgba(78,205,196,0.3);
-  }
-  .manual-link:hover{background:#0d4a5a;}
-  .field-row{display:flex;gap:6px;margin-bottom:8px;}
-  .inp{
-    background:#111122;border:1px solid #2a2a4a;border-radius:6px;
-    color:#ccc;padding:8px 10px;font-size:13px;width:100%;
-    font-family:'Microsoft JhengHei','PingFang TC',sans-serif;
-  }
+  .manual-link{display:block;text-align:center;background:#0a3a4a;color:var(--cold);padding:8px;border-radius:8px;font-size:12px;font-weight:700;text-decoration:none;margin-bottom:10px;border:1px solid rgba(78,205,196,0.3);}
+  .field-row{display:flex;gap:6px;margin-bottom:8px;align-items:center;}
+  .inp{background:#111122;border:1px solid #2a2a4a;border-radius:6px;color:#ccc;padding:8px 10px;font-size:13px;width:100%;font-family:'Microsoft JhengHei','PingFang TC',sans-serif;}
   .inp:focus{outline:none;border-color:var(--gold);}
   .inp::placeholder{color:#2a2a4a;}
   .inp-sm{width:130px;flex:none;}
-  .nums-grid-input{
-    display:grid;grid-template-columns:repeat(10,1fr);gap:4px;margin-bottom:8px;
-  }
-  .num-input-btn{
-    aspect-ratio:1;border:1px solid #2a2a4a;border-radius:5px;
-    background:#111122;color:#555;font-size:11px;font-weight:700;
-    cursor:pointer;display:flex;align-items:center;justify-content:center;
-    transition:all .12s;
-  }
+  .nums-grid-input{display:grid;grid-template-columns:repeat(10,1fr);gap:4px;margin-bottom:8px;}
+  .num-input-btn{aspect-ratio:1;border:1px solid #2a2a4a;border-radius:5px;background:#111122;color:#555;font-size:11px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .12s;}
   .num-input-btn.chosen{background:var(--cold);color:#000;border-color:var(--cold);}
   .num-input-btn.super-chosen{background:var(--super);color:#fff;border-color:var(--super);}
   .manual-hint{font-size:10px;color:#444;margin-bottom:8px;line-height:1.6;}
-  .manual-hint b{color:#666;}
-  .super-toggle{
-    display:flex;align-items:center;gap:8px;
-    font-size:11px;color:#666;margin-bottom:8px;
-  }
+  .super-toggle{display:flex;align-items:center;gap:8px;font-size:11px;color:#666;margin-bottom:8px;}
   .super-toggle input{accent-color:var(--super);}
-  .add-btn{
-    background:var(--gold);color:#000;border:none;border-radius:6px;
-    padding:9px 0;font-size:13px;font-weight:700;cursor:pointer;width:100%;
-    font-family:'Microsoft JhengHei','PingFang TC',sans-serif;
-  }
-  .add-btn:hover{background:#e6c200;}
-  .period-count{font-size:10px;color:#555;margin-top:4px;text-align:center;}
+  .add-btn{background:var(--gold);color:#000;border:none;border-radius:6px;padding:9px 0;font-size:13px;font-weight:700;cursor:pointer;width:100%;font-family:'Microsoft JhengHei','PingFang TC',sans-serif;}
 
-  /* Paste area */
   .paste-box{background:#0d0d1a;border:1px solid #1e1e2e;border-radius:10px;padding:12px;margin-bottom:10px;}
   .paste-title{font-size:11px;color:#666;letter-spacing:1px;margin-bottom:8px;}
-  .paste-area{
-    width:100%;background:#111122;border:1px solid #2a2a4a;border-radius:6px;
-    color:#ccc;padding:8px;font-size:11px;font-family:monospace;
-    resize:none;height:76px;
-  }
+  .paste-area{width:100%;background:#111122;border:1px solid #2a2a4a;border-radius:6px;color:#ccc;padding:8px;font-size:11px;font-family:monospace;resize:none;height:76px;}
   .paste-area:focus{outline:none;border-color:var(--gold);}
   .paste-area::placeholder{color:#2a2a4a;font-size:10px;line-height:1.7;}
-  .parse-btn{
-    background:var(--gold);color:#000;border:none;border-radius:6px;
-    padding:8px 0;font-size:12px;font-weight:700;cursor:pointer;
-    margin-top:6px;width:100%;
-    font-family:'Microsoft JhengHei','PingFang TC',sans-serif;
-  }
-  .parse-btn:hover{background:#e6c200;}
+  .parse-btn{background:var(--gold);color:#000;border:none;border-radius:6px;padding:8px 0;font-size:12px;font-weight:700;cursor:pointer;margin-top:6px;width:100%;font-family:'Microsoft JhengHei','PingFang TC',sans-serif;}
+
   .msg{font-size:10px;margin-top:5px;min-height:14px;}
   .msg.err{color:#ff6b6b;}
   .msg.ok{color:var(--cold);}
 
-  /* Draws */
   .draws-title{font-size:11px;color:#444;letter-spacing:2px;margin-bottom:6px;display:flex;align-items:center;gap:8px;}
   .btn-sm{background:none;border:1px solid #1e1e2e;color:#333;border-radius:5px;padding:2px 8px;font-size:10px;cursor:pointer;}
   .btn-sm:hover{color:#666;border-color:#333;}
@@ -137,28 +96,18 @@
   .empty-card{color:#2a2a3a;font-size:11px;text-align:center;padding:14px 0;}
   .source-note{font-size:9px;color:#222;text-align:right;margin-top:3px;padding-bottom:4px;}
 
-  /* BOTTOM */
   .bottom-section{background:#5a6a7d;padding:14px 16px 28px;}
   .legend{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;font-size:11px;}
   .legend-item{display:flex;align-items:center;gap:4px;color:#dde4ec;}
   .dot{width:9px;height:9px;border-radius:50%;}
 
-  /* Pick grid */
   .grid{display:grid;grid-template-columns:repeat(10,1fr);gap:4px;margin-bottom:14px;}
-  .num-btn{
-    aspect-ratio:1;border:none;border-radius:6px;
-    font-size:11px;font-weight:700;cursor:pointer;
-    transition:all .12s;display:flex;align-items:center;justify-content:center;
-    background:#3e4e5e;color:#c0cad4;
-  }
+  .num-btn{aspect-ratio:1;border:none;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;transition:all .12s;display:flex;align-items:center;justify-content:center;background:#3e4e5e;color:#c0cad4;}
   .num-btn:active{transform:scale(.92);}
   .num-btn.selected{background:var(--gold)!important;color:#000!important;transform:scale(1.08);}
   .num-btn.disabled{opacity:.3;cursor:not-allowed;}
 
-  .selected-display{
-    background:rgba(0,0,0,.2);border:1px solid rgba(255,255,255,.1);
-    border-radius:10px;padding:12px;min-height:60px;margin-bottom:12px;
-  }
+  .selected-display{background:rgba(0,0,0,.2);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:12px;min-height:60px;margin-bottom:12px;}
   .selected-title{font-size:11px;color:#c0cad4;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;}
   .sel-count-bar{display:flex;gap:3px;}
   .sel-dot{width:13px;height:13px;border-radius:50%;background:#2a3a4a;transition:all .2s;}
@@ -170,27 +119,12 @@
   .sel-super{background:var(--super);color:#fff;}
 
   .btn-row{display:flex;gap:8px;margin-bottom:12px;}
-  .btn{
-    flex:1;padding:11px;border:none;border-radius:8px;
-    font-size:13px;font-weight:700;cursor:pointer;transition:all .2s;
-    font-family:'Microsoft JhengHei','PingFang TC',sans-serif;
-  }
+  .btn{flex:1;padding:11px;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;transition:all .2s;font-family:'Microsoft JhengHei','PingFang TC',sans-serif;}
   .btn-gold{background:var(--gold);color:#000;}.btn-gold:active{background:#e6c200;}
   .btn-orange{background:var(--orange);color:#fff;}.btn-orange:active{background:var(--orange-dark);}
-  .btn-outline{background:rgba(0,0,0,.2);color:#c0cad4;border:1px solid rgba(255,255,255,.2);}
-  .btn-outline:active{background:rgba(0,0,0,.35);}
+  .btn-outline{background:rgba(0,0,0,.2);color:#c0cad4;border:1px solid rgba(255,255,255,.2);}.btn-outline:active{background:rgba(0,0,0,.35);}
   .notice{background:rgba(0,0,0,.2);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:10px 12px;font-size:11px;color:#8a9aad;text-align:center;}
-
-  /* Hide/show panels */
   .hidden{display:none!important;}
-
-  /* PWA install hint */
-  .pwa-hint{
-    background:#0d0d1a;border:1px solid #1e1e3a;border-radius:8px;
-    padding:8px 12px;margin-bottom:10px;font-size:10px;color:#555;
-    text-align:center;display:none;
-  }
-  .pwa-hint.show{display:block;}
 </style>
 </head>
 <body>
@@ -198,73 +132,65 @@
   <div class="top-section">
     <h1>BINGO BINGO</h1>
     <div class="subtitle">台彩賓果賓果 · 選號工具</div>
-
-    <!-- PWA hint -->
     <div class="pwa-hint" id="pwa-hint"></div>
 
-    <!-- Input method tabs -->
-    <div class="input-tabs">
-      <button class="input-tab active" id="tab-pc" onclick="switchInputTab('pc')">💻 電腦（書籤）</button>
-      <button class="input-tab" id="tab-mobile" onclick="switchInputTab('mobile')">📱 手機（點選）</button>
-      <button class="input-tab" id="tab-paste" onclick="switchInputTab('paste')">📋 貼上文字</button>
+    <!-- 自動抓取 -->
+    <div class="auto-box">
+      <div class="auto-title">🚀 自動抓取最新開獎（手機/電腦均可）</div>
+      <button class="auto-btn" id="auto-btn" onclick="autoFetch()">
+        <span id="auto-btn-text">⚡ 立即抓取最新2期開獎</span>
+      </button>
+      <div class="auto-status" id="auto-status"></div>
+      <div class="auto-countdown" id="auto-countdown"></div>
     </div>
 
-    <!-- PC: Bookmarklet -->
-    <div id="panel-pc">
-      <div class="bookmarklet-box">
-        <div class="bm-title">🔖 書籤小工具 v4（拖到瀏覽器書籤列）</div>
-        <div class="bm-row">
-          <a class="bm-drag" id="bm-link">📋 抓最近2期</a>
-          <div class="bm-tip">
-            拖到書籤列 → 開啟 <a href="https://bingo.kuaishou1688.com" target="_blank">kuaishou1688.com</a><br>
-            設定顯示期數=2 → 點書籤 → 切換到「貼上文字」頁籤貼入
+    <!-- 手動輸入（可折疊） -->
+    <div class="manual-toggle" onclick="toggleManualSection()">
+      ✏️ 手動輸入開獎號碼 <span id="manual-arrow">▼</span>
+    </div>
+    <div class="manual-section" id="manual-section">
+      <div class="input-tabs">
+        <button class="input-tab active" id="tab-pc" onclick="switchInputTab('pc')">💻 電腦書籤</button>
+        <button class="input-tab" id="tab-mobile" onclick="switchInputTab('mobile')">📱 手動點選</button>
+        <button class="input-tab" id="tab-paste" onclick="switchInputTab('paste')">📋 貼上文字</button>
+      </div>
+      <div id="panel-pc">
+        <div class="bookmarklet-box">
+          <div class="bm-title">🔖 書籤小工具 v4</div>
+          <div class="bm-row">
+            <a class="bm-drag" id="bm-link">📋 抓最近2期</a>
+            <div class="bm-tip">拖到書籤列 → 開啟 <a href="https://bingo.kuaishou1688.com" target="_blank">kuaishou1688.com</a><br>設定顯示期數=2 → 點書籤 → 切「貼上文字」貼入</div>
           </div>
         </div>
       </div>
-    </div>
-
-    <!-- Mobile: Manual grid input -->
-    <div id="panel-mobile" class="hidden">
-      <div class="manual-box">
-        <div class="manual-title">📱 手機手動輸入開獎號碼</div>
-        <a class="manual-link" href="https://bingo.kuaishou1688.com" target="_blank">
-          🔗 開啟 kuaishou1688.com 查看開獎
-        </a>
-        <div class="manual-hint">
-          <b>步驟：</b>對照網站開獎結果，點選下方號碼格，點一下選取，再點取消。<br>
-          選完20個後輸入期號按「加入本期」。<br>
-          <b>超級號碼：</b>先開啟超級模式再點號碼。
-        </div>
-        <div class="field-row">
-          <input class="inp inp-sm" id="m-period" placeholder="期號（選填）" type="number">
-          <div class="super-toggle">
-            <input type="checkbox" id="super-mode">
-            <label for="super-mode" style="color:#9B59B6;font-size:11px;cursor:pointer;">⭐ 超級號碼模式</label>
+      <div id="panel-mobile" class="hidden">
+        <div class="manual-box">
+          <div class="manual-title">📱 手動點選號碼</div>
+          <a class="manual-link" href="https://bingo.kuaishou1688.com" target="_blank">🔗 開啟 kuaishou1688.com 查看開獎</a>
+          <div class="field-row">
+            <input class="inp inp-sm" id="m-period" placeholder="期號（選填）" type="number">
+            <div class="super-toggle">
+              <input type="checkbox" id="super-mode">
+              <label for="super-mode" style="color:#9B59B6;font-size:11px;cursor:pointer;">⭐ 超級號碼</label>
+            </div>
           </div>
+          <div class="nums-grid-input" id="manual-grid"></div>
+          <div class="manual-hint">已點選 <b id="manual-count">0</b>/20　超級：<b id="manual-super">-</b></div>
+          <button class="add-btn" onclick="addManualDraw()">✅ 加入本期開獎</button>
+          <div class="msg" id="manual-msg"></div>
         </div>
-        <div class="nums-grid-input" id="manual-grid"></div>
-        <div class="manual-hint" id="manual-count-hint">已點選 <b id="manual-count">0</b> / 20 個號碼　超級號碼：<b id="manual-super">-</b></div>
-        <button class="add-btn" onclick="addManualDraw()">✅ 加入本期開獎</button>
-        <div class="period-count" id="manual-msg"></div>
+      </div>
+      <div id="panel-paste" class="hidden">
+        <div class="paste-box">
+          <div class="paste-title">📋 貼上書籤複製的內容</div>
+          <textarea class="paste-area" id="paste-input" placeholder="PERIOD:115015327&#10;NUMBERS:2,6,11,...&#10;SUPER:28&#10;---&#10;PERIOD:115015326&#10;NUMBERS:4,21,...&#10;SUPER:42"></textarea>
+          <div id="parse-msg" class="msg"></div>
+          <button class="parse-btn" onclick="parseInput()">✅ 解析並載入</button>
+        </div>
       </div>
     </div>
 
-    <!-- Paste -->
-    <div id="panel-paste" class="hidden">
-      <div class="paste-box">
-        <div class="paste-title">📋 貼上書籤複製的內容</div>
-        <textarea class="paste-area" id="paste-input"
-          placeholder="貼上書籤內容，例如：&#10;PERIOD:115015327&#10;NUMBERS:2,6,11,...&#10;SUPER:28&#10;---&#10;PERIOD:115015326&#10;NUMBERS:4,21,...&#10;SUPER:42"></textarea>
-        <div id="parse-msg" class="msg"></div>
-        <button class="parse-btn" onclick="parseInput()">✅ 解析並載入</button>
-      </div>
-    </div>
-
-    <!-- Recent draws display -->
-    <div class="draws-title">
-      📋 最近2期開獎
-      <button class="btn-sm" onclick="clearDraws()">清除</button>
-    </div>
+    <div class="draws-title">📋 最近2期開獎 <button class="btn-sm" onclick="clearDraws()">清除</button></div>
     <div class="draws-grid" id="draws-container">
       <div class="draw-card"><div class="empty-card">尚未載入</div></div>
       <div class="draw-card"><div class="empty-card">尚未載入</div></div>
@@ -281,7 +207,7 @@
     <div class="grid" id="pick-grid"></div>
     <div class="selected-display">
       <div class="selected-title">
-        <span>已選號碼 <span id="sel-count">0</span> / 10（10星）</span>
+        <span>已選號碼 <span id="sel-count">0</span>/10（10星）</span>
         <div class="sel-count-bar" id="sel-count-bar"></div>
       </div>
       <div class="selected-nums" id="selected-nums"></div>
@@ -297,187 +223,226 @@
 
 <script>
 const MAX_PICK = 10;
+const PROXY = 'https://corsproxy.io/?';
+const TARGET = 'https://bingo.kuaishou1688.com';
 
-// ── PWA hint ──
+// PWA hint
 window.addEventListener('load', () => {
   const hint = document.getElementById('pwa-hint');
   const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
   const isAndroid = /android/i.test(navigator.userAgent);
   const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
   if(!isStandalone){
-    if(isIOS){ hint.textContent = '📱 iOS：點 Safari 分享按鈕 → 加入主畫面，即可當 App 使用'; hint.classList.add('show'); }
-    else if(isAndroid){ hint.textContent = '📱 Android：點瀏覽器選單 → 新增到主畫面，即可當 App 使用'; hint.classList.add('show'); }
+    if(isIOS){ hint.textContent='📱 iOS：Safari 分享 → 加入主畫面，當 App 使用'; hint.classList.add('show'); }
+    else if(isAndroid){ hint.textContent='📱 Android：Chrome 選單 → 新增到主畫面，當 App 使用'; hint.classList.add('show'); }
   }
 });
 
-// ── Input tab switch ──
+// Auto fetch
+let fetchTimer = null;
+
+async function autoFetch(){
+  const btn = document.getElementById('auto-btn');
+  const btnText = document.getElementById('auto-btn-text');
+  const status = document.getElementById('auto-status');
+  const countdown = document.getElementById('auto-countdown');
+  btn.disabled = true;
+  btnText.innerHTML = '<div class="spinner"></div> 抓取中...';
+  status.className = 'auto-status loading';
+  status.textContent = '連線中...';
+  countdown.textContent = '';
+  try {
+    const url = PROXY + encodeURIComponent(TARGET);
+    const resp = await fetch(url);
+    if(!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    const html = await resp.text();
+
+    // 找期號
+    const termMatches = [...html.matchAll(/draw-term[^>]*>([\d]+)期/g)];
+
+    // 找開獎號碼：兩種屬性順序都嘗試
+    let drawn = [
+      ...[...html.matchAll(/data-number="(\d+)"[^>]*class="([^"]*)drawn([^"]*)"/g)].map(m=>({num:parseInt(m[1]),isSuper:m[2].includes('super-number')||m[3].includes('super-number')})),
+      ...[...html.matchAll(/class="([^"]*)drawn([^"]*)"[^>]*data-number="(\d+)"/g)].map(m=>({num:parseInt(m[3]),isSuper:m[1].includes('super-number')||m[2].includes('super-number')}))
+    ].filter((d,i,arr) => d.num>=1 && d.num<=80 && arr.findIndex(x=>x.num===d.num)===i);
+
+    if(drawn.length < 20) throw new Error(`只找到 ${drawn.length} 個號碼。網站為動態渲染，Proxy 無法取得完整資料。請改用書籤方式。`);
+
+    const draws = [];
+    const perPage = 20;
+    for(let i=0; i<Math.min(2, Math.floor(drawn.length/perPage)); i++){
+      const chunk = drawn.slice(i*perPage, (i+1)*perPage);
+      draws.push({
+        period: termMatches[i] ? termMatches[i][1] : '未知',
+        datetime: new Date().toLocaleTimeString('zh-TW',{hour:'2-digit',minute:'2-digit'}),
+        numbers: chunk.map(d=>d.num).sort((a,b)=>a-b),
+        superNum: chunk.find(d=>d.isSuper)?.num || null
+      });
+    }
+    if(!draws.length) throw new Error('無法解析出期數資料');
+
+    loadDraws(draws);
+    status.className = 'auto-status ok';
+    status.textContent = `✅ 成功！第 ${draws.map(d=>d.period).join('、')} 期`;
+    startCountdown();
+  } catch(e) {
+    status.className = 'auto-status err';
+    status.textContent = `❌ ${e.message}`;
+    countdown.textContent = '請展開下方手動輸入';
+  } finally {
+    btn.disabled = false;
+    btnText.textContent = '⚡ 立即抓取最新2期開獎';
+  }
+}
+
+function startCountdown(){
+  const el = document.getElementById('auto-countdown');
+  if(fetchTimer) clearInterval(fetchTimer);
+  let secs = 300;
+  fetchTimer = setInterval(() => {
+    secs--;
+    if(secs <= 0){
+      clearInterval(fetchTimer);
+      el.style.color = 'var(--orange)';
+      el.textContent = '⏰ 已超過5分鐘，建議重新抓取！';
+    } else {
+      el.style.color = '';
+      el.textContent = `距下次開獎約 ${Math.floor(secs/60)}分${String(secs%60).padStart(2,'0')}秒`;
+    }
+  }, 1000);
+}
+
+function toggleManualSection(){
+  const sec = document.getElementById('manual-section');
+  const arrow = document.getElementById('manual-arrow');
+  sec.classList.toggle('open');
+  arrow.textContent = sec.classList.contains('open') ? '▲' : '▼';
+}
+
 function switchInputTab(tab){
-  ['pc','mobile','paste'].forEach(t => {
-    document.getElementById('tab-'+t).classList.toggle('active', t===tab);
-    document.getElementById('panel-'+t).classList.toggle('hidden', t!==tab);
+  ['pc','mobile','paste'].forEach(t=>{
+    document.getElementById('tab-'+t).classList.toggle('active',t===tab);
+    document.getElementById('panel-'+t).classList.toggle('hidden',t!==tab);
   });
 }
 
-// ── Bookmarklet v4 ──
+// Bookmarklet v4
 const bmCode=`(function(){
   var wrapper=document.querySelector('#drawGridWrapper');
-  if(!wrapper){alert('找不到 #drawGridWrapper，請確認頁面已載入');return;}
+  if(!wrapper){alert('找不到 #drawGridWrapper');return;}
   function getTerm(idx){
-    var selectors=['.draw-term','[data-i18n-key="draw-term-suffix"]','.RK10BN','.issue','.qnum','.period-num'];
-    for(var s=0;s<selectors.length;s++){
-      var els=wrapper.querySelectorAll(selectors[s]);
+    var sel=['.draw-term','[data-i18n-key="draw-term-suffix"]','.RK10BN','.issue','.qnum','.period-num'];
+    for(var s=0;s<sel.length;s++){
+      var els=wrapper.querySelectorAll(sel[s]);
       if(els[idx]) return els[idx].textContent.replace(/期|第/g,'').trim();
-      els=document.querySelectorAll(selectors[s]);
+      els=document.querySelectorAll(sel[s]);
       if(els[idx]) return els[idx].textContent.replace(/期|第/g,'').trim();
     }
     return '';
   }
   var grids=wrapper.querySelectorAll('.numbers-grid');
-  if(!grids.length){alert('找不到 .numbers-grid，請確認頁面已完全載入');return;}
+  if(!grids.length){alert('找不到號碼格');return;}
   var results=[];
   grids.forEach(function(grid,idx){
-    if(idx>=2) return;
-    var term=getTerm(idx);
-    var nums=[],superNum='';
+    if(idx>=2)return;
+    var term=getTerm(idx),nums=[],sup='';
     grid.querySelectorAll('.number-cell.drawn').forEach(function(el){
       var n=parseInt(el.getAttribute('data-number'),10);
-      if(n>=1&&n<=80){nums.push(n);if(el.classList.contains('super-number'))superNum=String(n);}
+      if(n>=1&&n<=80){nums.push(n);if(el.classList.contains('super-number'))sup=String(n);}
     });
-    if(nums.length===20) results.push('PERIOD:'+term+'\\nNUMBERS:'+nums.join(',')+'\\nSUPER:'+superNum);
+    if(nums.length===20) results.push('PERIOD:'+term+'\\nNUMBERS:'+nums.join(',')+'\\nSUPER:'+sup);
   });
   if(!results.length){alert('找不到完整20個號碼');return;}
   var out=results.join('\\n---\\n');
-  navigator.clipboard.writeText(out).then(function(){
-    alert('✅ 已複製 '+results.length+' 期！請切換到App的「貼上文字」頁籤貼入');
-  }).catch(function(){prompt('請手動複製：',out);});
+  navigator.clipboard.writeText(out).then(function(){alert('✅ 已複製 '+results.length+' 期！請貼到App的「貼上文字」');}).catch(function(){prompt('手動複製：',out);});
 })();`;
 document.getElementById('bm-link').href='javascript:'+encodeURIComponent(bmCode);
 
-// ── Manual grid (mobile) ──
-let manualChosen = new Set();
-let manualSuper = null;
+// Data
+let selected=new Set(),prevDrawNums=new Set(),prevSuperNum=null,recentDraws=[];
 
+function loadDraws(draws){
+  recentDraws=draws.slice(0,2);
+  prevDrawNums=new Set(recentDraws[0].numbers);
+  prevSuperNum=recentDraws[0].superNum;
+  renderDraws();buildPickGrid();updateSelected();
+}
+
+// Manual grid
+let manualChosen=new Set(),manualSuper=null;
 function buildManualGrid(){
-  const g = document.getElementById('manual-grid'); g.innerHTML='';
+  const g=document.getElementById('manual-grid');g.innerHTML='';
   for(let i=1;i<=80;i++){
-    const b = document.createElement('button');
-    const isChosen = manualChosen.has(i);
-    const isSuper = i === manualSuper;
-    b.className = 'num-input-btn' + (isSuper?' super-chosen':isChosen?' chosen':'');
-    b.textContent = String(i).padStart(2,'0');
-    b.onclick = () => toggleManual(i);
+    const b=document.createElement('button');
+    b.className='num-input-btn'+(i===manualSuper?' super-chosen':manualChosen.has(i)?' chosen':'');
+    b.textContent=String(i).padStart(2,'0');
+    b.onclick=()=>toggleManualNum(i);
     g.appendChild(b);
   }
-  document.getElementById('manual-count').textContent = manualChosen.size;
-  document.getElementById('manual-super').textContent = manualSuper ? String(manualSuper).padStart(2,'0') : '-';
+  document.getElementById('manual-count').textContent=manualChosen.size;
+  document.getElementById('manual-super').textContent=manualSuper?String(manualSuper).padStart(2,'0'):'-';
 }
-
-function toggleManual(n){
-  const superMode = document.getElementById('super-mode').checked;
-  if(superMode){
-    manualSuper = manualSuper === n ? null : n;
-    if(!manualChosen.has(n) && manualChosen.size < 20) manualChosen.add(n);
-  } else {
-    if(manualChosen.has(n)){ manualChosen.delete(n); if(manualSuper===n) manualSuper=null; }
-    else if(manualChosen.size < 20) manualChosen.add(n);
-  }
+function toggleManualNum(n){
+  const sup=document.getElementById('super-mode').checked;
+  if(sup){manualSuper=manualSuper===n?null:n;if(!manualChosen.has(n)&&manualChosen.size<20)manualChosen.add(n);}
+  else{if(manualChosen.has(n)){manualChosen.delete(n);if(manualSuper===n)manualSuper=null;}else if(manualChosen.size<20)manualChosen.add(n);}
   buildManualGrid();
 }
-
 function addManualDraw(){
-  const msgEl = document.getElementById('manual-msg');
-  if(manualChosen.size !== 20){ msgEl.style.color='#ff6b6b'; msgEl.textContent=`需要選20個號碼，目前${manualChosen.size}個`; return; }
-  const period = document.getElementById('m-period').value.trim() || '未知';
-  const time = new Date().toLocaleTimeString('zh-TW',{hour:'2-digit',minute:'2-digit'});
-  const draw = {
-    period, datetime: time,
-    numbers: [...manualChosen].sort((a,b)=>a-b),
-    superNum: manualSuper
-  };
-  recentDraws.unshift(draw);
-  if(recentDraws.length > 2) recentDraws = recentDraws.slice(0,2);
-  prevDrawNums = new Set(recentDraws[0].numbers);
-  prevSuperNum = recentDraws[0].superNum;
-
-  // reset
-  manualChosen = new Set(); manualSuper = null;
-  document.getElementById('m-period').value = '';
-  document.getElementById('super-mode').checked = false;
+  const msgEl=document.getElementById('manual-msg');
+  if(manualChosen.size!==20){msgEl.className='msg err';msgEl.textContent=`需要20個，目前${manualChosen.size}個`;return;}
+  const period=document.getElementById('m-period').value.trim()||'未知';
+  const time=new Date().toLocaleTimeString('zh-TW',{hour:'2-digit',minute:'2-digit'});
+  recentDraws.unshift({period,datetime:time,numbers:[...manualChosen].sort((a,b)=>a-b),superNum:manualSuper});
+  if(recentDraws.length>2)recentDraws=recentDraws.slice(0,2);
+  prevDrawNums=new Set(recentDraws[0].numbers);prevSuperNum=recentDraws[0].superNum;
+  manualChosen=new Set();manualSuper=null;
+  document.getElementById('m-period').value='';document.getElementById('super-mode').checked=false;
   buildManualGrid();
-
-  msgEl.style.color='#4ECDC4';
-  msgEl.textContent=`✅ 已加入第${period}期！共${recentDraws.length}期`;
+  msgEl.className='msg ok';msgEl.textContent=`✅ 已加入第${period}期！`;
   setTimeout(()=>msgEl.textContent='',3000);
-
-  renderDraws(); buildPickGrid(); updateSelected();
+  renderDraws();buildPickGrid();updateSelected();
 }
-
 buildManualGrid();
 
-// ── Paste parser ──
-let selected=new Set(), prevDrawNums=new Set(), prevSuperNum=null, recentDraws=[];
-
+// Paste
 function parseBlock(text){
-  const pm=text.match(/PERIOD\s*:\s*(\d*)/);
-  const nm=text.match(/NUMBERS\s*:\s*([\d,]+)/);
-  const sm=text.match(/SUPER\s*:\s*(\d*)/);
-  if(!nm) return null;
-  const allNums=nm[1].split(',').map(Number).filter(n=>n>=1&&n<=80);
-  const period=pm&&pm[1]?pm[1]:'未知';
-  const superNum=sm&&sm[1]?parseInt(sm[1]):null;
+  const pm=text.match(/PERIOD\s*:\s*(\d*)/),nm=text.match(/NUMBERS\s*:\s*([\d,]+)/),sm=text.match(/SUPER\s*:\s*(\d*)/);
+  if(!nm)return null;
+  const all=nm[1].split(',').map(Number).filter(n=>n>=1&&n<=80);
+  const period=pm&&pm[1]?pm[1]:'未知',superNum=sm&&sm[1]?parseInt(sm[1]):null;
   const time=new Date().toLocaleTimeString('zh-TW',{hour:'2-digit',minute:'2-digit'});
-  if(allNums.length===20){
-    return [{period,datetime:time,numbers:allNums.sort((a,b)=>a-b),superNum}];
-  } else if(allNums.length>20&&allNums.length%20===0){
-    const pNum=parseInt(period)||0;
-    return Array.from({length:allNums.length/20},(_,i)=>({
-      period:pNum>0?String(pNum-i):period+(i>0?`-${i}`:''),
-      datetime:time,
-      numbers:allNums.slice(i*20,(i+1)*20).sort((a,b)=>a-b),
-      superNum:i===0?superNum:null
-    }));
-  } else if(allNums.length>20){
-    return [{period,datetime:time,numbers:allNums.slice(0,20).sort((a,b)=>a-b),superNum}];
-  }
+  if(all.length===20)return[{period,datetime:time,numbers:all.sort((a,b)=>a-b),superNum}];
+  if(all.length>20&&all.length%20===0){const pN=parseInt(period)||0;return Array.from({length:all.length/20},(_,i)=>({period:pN>0?String(pN-i):period+(i>0?`-${i}`:''),datetime:time,numbers:all.slice(i*20,(i+1)*20).sort((a,b)=>a-b),superNum:i===0?superNum:null}));}
+  if(all.length>20)return[{period,datetime:time,numbers:all.slice(0,20).sort((a,b)=>a-b),superNum}];
   return null;
 }
-
 function parseInput(){
   const raw=document.getElementById('paste-input').value.trim();
   const msgEl=document.getElementById('parse-msg');
   msgEl.className='msg err';msgEl.textContent='';
   if(!raw){msgEl.textContent='請貼上內容';return;}
   let draws=[];
-  raw.split(/\n\s*---\s*\n/).map(s=>s.trim()).filter(Boolean).forEach(block=>{
-    const r=parseBlock(block);if(r) draws.push(...r);
-  });
-  if(!draws.length){msgEl.textContent='解析失敗，請重新點書籤複製後貼上';return;}
-  recentDraws=draws.slice(0,2);
-  prevDrawNums=new Set(recentDraws[0].numbers);
-  prevSuperNum=recentDraws[0].superNum;
+  raw.split(/\n\s*---\s*\n/).map(s=>s.trim()).filter(Boolean).forEach(b=>{const r=parseBlock(b);if(r)draws.push(...r);});
+  if(!draws.length){msgEl.textContent='解析失敗';return;}
+  loadDraws(draws);
   document.getElementById('paste-input').value='';
-  msgEl.className='msg ok';
-  msgEl.textContent=`✅ 成功載入 ${recentDraws.length} 期！`;
+  msgEl.className='msg ok';msgEl.textContent=`✅ 成功載入 ${Math.min(draws.length,2)} 期！`;
   setTimeout(()=>msgEl.textContent='',3000);
-  renderDraws();buildPickGrid();updateSelected();
 }
-
-document.getElementById('paste-input').addEventListener('keydown',e=>{
-  if(e.key==='Enter'&&e.ctrlKey){e.preventDefault();parseInput();}
-});
+document.getElementById('paste-input').addEventListener('keydown',e=>{if(e.key==='Enter'&&e.ctrlKey){e.preventDefault();parseInput();}});
 
 function clearDraws(){
   recentDraws=[];prevDrawNums=new Set();prevSuperNum=null;
-  document.getElementById('parse-msg').textContent='';
+  if(fetchTimer){clearInterval(fetchTimer);fetchTimer=null;}
+  document.getElementById('auto-status').textContent='';
+  document.getElementById('auto-countdown').textContent='';
   renderDraws();buildPickGrid();updateSelected();
 }
 
 function renderDraws(){
   const c=document.getElementById('draws-container');
-  if(!recentDraws.length){
-    c.innerHTML='<div class="draw-card"><div class="empty-card">尚未載入</div></div><div class="draw-card"><div class="empty-card">尚未載入</div></div>';
-    return;
-  }
+  if(!recentDraws.length){c.innerHTML='<div class="draw-card"><div class="empty-card">尚未載入</div></div><div class="draw-card"><div class="empty-card">尚未載入</div></div>';return;}
   const cards=recentDraws.map((d,i)=>`
     <div class="draw-card${i===0?' latest':''}">
       <div class="draw-header">
@@ -487,11 +452,11 @@ function renderDraws(){
       <div class="draw-balls">${d.numbers.map(n=>`<div class="ball${n===d.superNum?' super':''}">${String(n).padStart(2,'0')}</div>`).join('')}</div>
       ${d.superNum?`<div style="font-size:10px;color:var(--super);margin-top:4px;">⭐ 超級：${String(d.superNum).padStart(2,'0')}</div>`:''}
     </div>`);
-  while(cards.length<2) cards.push('<div class="draw-card"><div class="empty-card">尚未載入</div></div>');
+  while(cards.length<2)cards.push('<div class="draw-card"><div class="empty-card">尚未載入</div></div>');
   c.innerHTML=cards.join('');
 }
 
-// ── Pick grid ──
+// Pick grid
 function buildPickGrid(){
   const g=document.getElementById('pick-grid');g.innerHTML='';
   const full=selected.size>=MAX_PICK;
@@ -499,50 +464,37 @@ function buildPickGrid(){
     const b=document.createElement('button');
     const isSel=selected.has(i),isPrev=prevDrawNums.has(i),isSuper=i===prevSuperNum;
     b.className='num-btn'+(isSel?' selected':'')+(full&&!isSel?' disabled':'');
-    if(isPrev&&!isSel) b.style.boxShadow=`0 0 0 2px ${isSuper?'var(--super)':'var(--pink-bg)'}`;
+    if(isPrev&&!isSel)b.style.boxShadow=`0 0 0 2px ${isSuper?'var(--super)':'var(--pink-bg)'}`;
     b.textContent=String(i).padStart(2,'0');
     b.onclick=()=>toggleNum(i);
     g.appendChild(b);
   }
 }
-
-function toggleNum(n){
-  if(selected.has(n)) selected.delete(n);
-  else if(selected.size<MAX_PICK) selected.add(n);
-  updateSelected();buildPickGrid();
-}
-
+function toggleNum(n){if(selected.has(n))selected.delete(n);else if(selected.size<MAX_PICK)selected.add(n);updateSelected();buildPickGrid();}
 function updateSelected(){
   const count=selected.size;
   document.getElementById('sel-count').textContent=count;
-  const bar=document.getElementById('sel-count-bar');
-  bar.innerHTML=Array.from({length:MAX_PICK},(_,i)=>`<div class="sel-dot${i<count?' filled':''}"></div>`).join('');
+  document.getElementById('sel-count-bar').innerHTML=Array.from({length:MAX_PICK},(_,i)=>`<div class="sel-dot${i<count?' filled':''}"></div>`).join('');
   const w=document.getElementById('selected-nums');w.innerHTML='';
   [...selected].sort((a,b)=>a-b).forEach(n=>{
     const d=document.createElement('div');
-    const isSuper=n===prevSuperNum,isPrev=prevDrawNums.has(n);
-    d.className='sel-num '+(isSuper?'sel-super':isPrev?'sel-prev':'sel-normal');
-    d.textContent=String(n).padStart(2,'0');
-    w.appendChild(d);
+    d.className='sel-num '+(n===prevSuperNum?'sel-super':prevDrawNums.has(n)?'sel-prev':'sel-normal');
+    d.textContent=String(n).padStart(2,'0');w.appendChild(d);
   });
 }
-
 function smartPick(){
   selected.clear();
   const notPrev=Array.from({length:80},(_,i)=>i+1).filter(n=>!prevDrawNums.has(n)).sort(()=>Math.random()-.5);
   const prev=[...prevDrawNums].sort(()=>Math.random()-.5);
   [...notPrev.slice(0,8),...prev.slice(0,2)].forEach(n=>selected.add(n));
-  if(selected.size<MAX_PICK) notPrev.forEach(n=>{if(selected.size<MAX_PICK)selected.add(n);});
+  if(selected.size<MAX_PICK)notPrev.forEach(n=>{if(selected.size<MAX_PICK)selected.add(n);});
   updateSelected();buildPickGrid();
 }
-
 function randomPick(){
   selected.clear();
-  Array.from({length:80},(_,i)=>i+1).sort(()=>Math.random()-.5)
-    .forEach(n=>{if(selected.size<MAX_PICK)selected.add(n);});
+  Array.from({length:80},(_,i)=>i+1).sort(()=>Math.random()-.5).forEach(n=>{if(selected.size<MAX_PICK)selected.add(n);});
   updateSelected();buildPickGrid();
 }
-
 function clearPick(){selected.clear();updateSelected();buildPickGrid();}
 
 buildPickGrid();updateSelected();
