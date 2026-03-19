@@ -534,8 +534,9 @@ function smartPick(){
   updateSelected();buildPickGrid();
 }
 function randomPick(){
-  selected.clear();
-  Array.from({length:80},(_,i)=>i+1).sort(()=>Math.random()-.5).forEach(n=>{if(selected.size<MAX_PICK)selected.add(n);});
+  // 保留已選號碼，只從未選的號碼中隨機補充至10個
+  const unselected=Array.from({length:80},(_,i)=>i+1).filter(n=>!selected.has(n)).sort(()=>Math.random()-.5);
+  unselected.forEach(n=>{if(selected.size<MAX_PICK)selected.add(n);});
   updateSelected();buildPickGrid();
 }
 function clearPick(){selected.clear();updateSelected();buildPickGrid();}
