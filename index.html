@@ -109,6 +109,23 @@
   .btn-outline{background:rgba(0,0,0,.2);color:#c0cad4;border:1px solid rgba(255,255,255,.2);}.btn-outline:active{background:rgba(0,0,0,.35);}
   .notice{background:rgba(0,0,0,.2);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:10px 12px;font-size:11px;color:#8a9aad;text-align:center;}
   .hidden{display:none!important;}
+  /* 儲存選號 */
+  .saved-box{background:rgba(0,0,0,.2);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:12px;margin-top:12px;}
+  .saved-title{font-size:11px;color:#c0cad4;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;}
+  .btn-save{background:var(--orange);color:#fff;border:none;border-radius:6px;padding:5px 10px;font-size:11px;font-weight:700;cursor:pointer;font-family:"Microsoft JhengHei","PingFang TC",sans-serif;}
+  .btn-save:hover{background:var(--orange-dark);}
+  .btn-save:disabled{background:#555;color:#888;cursor:not-allowed;}
+  .saved-item{background:rgba(0,0,0,.2);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:8px 10px;margin-bottom:6px;}
+  .saved-item-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+  .saved-item-label{font-size:11px;color:#aaa;}
+  .saved-item-btns{display:flex;gap:6px;}
+  .btn-load{background:var(--gold);color:#000;border:none;border-radius:5px;padding:3px 10px;font-size:11px;font-weight:700;cursor:pointer;}
+  .btn-del{background:rgba(232,53,42,.3);color:#ff6b6b;border:1px solid rgba(232,53,42,.3);border-radius:5px;padding:3px 10px;font-size:11px;font-weight:700;cursor:pointer;}
+  .saved-nums{display:flex;flex-wrap:wrap;gap:3px;}
+  .saved-num{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;background:#3e4e5e;color:#c0cad4;}
+  .saved-num.is-prev{background:var(--pink-bg);color:#fff;}
+  .saved-num.is-super{background:var(--super);color:#fff;}
+  .saved-empty{font-size:11px;color:#555;text-align:center;padding:12px 0;}
 </style>
 </head>
 <body>
@@ -201,6 +218,15 @@
       <button class="btn btn-outline" onclick="clearPick()">清除</button>
     </div>
     <div class="notice">⚠️ 樂透為合法娛樂，號碼統計僅供參考，開獎結果完全隨機。</div>
+
+    <!-- 儲存選號 -->
+    <div class="saved-box">
+      <div class="saved-title">
+        📝 已儲存選號 <span id="saved-count">0</span>/10
+        <button class="btn-save" onclick="savePick()">＋ 儲存目前選號</button>
+      </div>
+      <div id="saved-list"></div>
+    </div>
   </div>
 </div>
 
@@ -544,6 +570,64 @@ function clearPick(){selected.clear();updateSelected();buildPickGrid();}
 buildPickGrid();updateSelected();
 
 // 頁面載入自動抓，每5分鐘自動更新
+
+// ── 儲存選號 ──
+const MAX_SAVED = 10;
+let savedPicks = JSON.parse(localStorage.getItem("bingo_saved") || "[]");
+
+function savePick(){
+  if(selected.size !== MAX_PICK){ alert("請先選好10個號碼！"); return; }
+  if(savedPicks.length >= MAX_SAVED){ alert("已達10組上限，請先刪除舊的！"); return; }
+  const time = new Date().toLocaleString("zh-TW",{month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit"});
+  savedPicks.push({ nums:[...selected].sort((a,b)=>a-b), time });
+  localStorage.setItem("bingo_saved", JSON.stringify(savedPicks));
+  renderSaved();
+}
+
+function loadPick(idx){
+  const pick = savedPicks[idx];
+  if(!pick) return;
+  selected = new Set(pick.nums);
+  updateSelected();buildPickGrid();
+}
+
+function deletePick(idx){
+  savedPicks.splice(idx,1);
+  localStorage.setItem("bingo_saved", JSON.stringify(savedPicks));
+  renderSaved();
+}
+
+function renderSaved(){
+  const list = document.getElementById("saved-list");
+  const countEl = document.getElementById("saved-count");
+  const saveBtn = document.querySelector(".btn-save");
+  countEl.textContent = savedPicks.length;
+  saveBtn.disabled = savedPicks.length >= MAX_SAVED;
+  if(!savedPicks.length){
+    list.innerHTML = '<div class="saved-empty">尚無儲存的選號</div>';
+    return;
+  }
+  list.innerHTML = savedPicks.map((p,i)=>{
+    const nums = p.nums.map(n=>{
+      const isPrev = prevDrawNums.has(n);
+      const isSuper = n === prevSuperNum;
+      const cls = isSuper?"is-super":isPrev?"is-prev":"";
+      return `<div class="saved-num ${cls}">${String(n).padStart(2,"0")}</div>`;
+    }).join("");
+    return `<div class="saved-item">
+      <div class="saved-item-header">
+        <span class="saved-item-label">組${i+1}　${p.time}</span>
+        <div class="saved-item-btns">
+          <button class="btn-load" onclick="loadPick(${i})">載入</button>
+          <button class="btn-del" onclick="deletePick(${i})">刪除</button>
+        </div>
+      </div>
+      <div class="saved-nums">${nums}</div>
+    </div>`;
+  }).join("");
+}
+
+renderSaved();
 autoFetch();
 setInterval(autoFetch, 5 * 60 * 1000);
 </script>
