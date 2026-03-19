@@ -133,7 +133,7 @@
     </div>
 
     <div class="auto-box">
-      <div class="auto-title">🚀 自動抓取最新2期開獎（台彩官方資料）</div>
+      <div class="auto-title">🚀 自動抓取最新2期開獎</div>
       <button class="auto-btn" id="auto-btn" onclick="autoFetch()">
         <span id="auto-btn-text">⚡ 立即抓取最新2期開獎</span>
       </button>
@@ -180,7 +180,7 @@
         <div class="paste-box">
           <div class="paste-title">📋 貼上書籤複製的內容</div>
           <textarea class="paste-area" id="paste-input"
-            placeholder="PERIOD:115015571&#10;NUMBERS:2,6,11,...&#10;SUPER:28&#10;---&#10;PERIOD:115015570&#10;NUMBERS:4,21,...&#10;SUPER:42"></textarea>
+            placeholder="PERIOD:115015695&#10;NUMBERS:7,14,20,...&#10;SUPER:36&#10;---&#10;PERIOD:115015694&#10;NUMBERS:2,3,4,...&#10;SUPER:57"></textarea>
           <div id="parse-msg" class="msg"></div>
           <button class="parse-btn" onclick="parseInput()">✅ 解析並載入</button>
         </div>
@@ -192,7 +192,7 @@
       <div class="draw-card"><div class="empty-card">尚未載入</div></div>
       <div class="draw-card"><div class="empty-card">尚未載入</div></div>
     </div>
-    <div class="source-note">資料來源：台灣彩券官方 API</div>
+    <div class="source-note">資料來源：kuaishou1688.com</div>
   </div>
 
   <div class="bottom-section">
@@ -221,73 +221,38 @@
 <script>
 const MAX_PICK = 10;
 
-// ── 期號計算 ──
-// 定位點：2026/03/18 18:55 台灣時間 = 第 115015571 期（已驗證）
-// 用已知兩點反推：
-//   07:05 = 115015429
-//   18:55 = 115015571（差140期，差700分鐘，正確）
-// 直接用 Unix timestamp 計算，避免時區問題
-// 2026/03/18 18:55 台灣時間 = 2026/03/18 10:55 UTC
+// kuaishou1688 API via allorigins proxy (POST)
+const API_URL = 'https://bingo.kuaishou1688.com/api/get_data';
+const PROXY_URL = 'https://api.allorigins.win/get?url=' + encodeURIComponent(API_URL);
+
+// 期號計算（定位點：2026/03/18 18:55 台灣 = 第 115015571 期）
 const ANCHOR_PERIOD = 115015571;
-const ANCHOR_UTC_MS = Date.UTC(2026, 2, 18, 10, 55, 0); // 2026-03-18 10:55 UTC = 18:55 台灣
+const ANCHOR_MS = new Date('2026-03-18T18:55:00+08:00').getTime();
 const MS_PER_PERIOD = 5 * 60 * 1000;
-const OPEN_START_MIN = 7 * 60 + 5;   // 07:05
-const OPEN_END_MIN   = 23 * 60 + 55; // 23:55
+const OPEN_START = 7 * 60 + 5;
+const OPEN_END   = 23 * 60 + 55;
 
 function getTWNow(){
-  // 台灣 UTC+8
   const now = new Date();
   return new Date(now.getTime() + (now.getTimezoneOffset() + 480) * 60000);
 }
 
-function getTWUTCMs(){
-  // 返回台灣時間對應的 UTC 毫秒（直接用系統時間 + 時區補償）
-  const now = new Date();
-  return now.getTime() + (now.getTimezoneOffset() + 480) * 60000;
-}
-
-// 計算最新已開獎期號（當前時間對應的期，但開獎在整點5分，需減1）
-// 規則：每期在 hh:05, hh:10... 開獎，所以當前時間所在的期還未開獎
-// 例：18:56 → 當前是18:56這期，但18:56還沒到下一個整5分，
-// 最新已開獎是 18:55 這期
 function calcLatestDrawnPeriod(){
-  const twUtcMs = getTWUTCMs();
-  // 對應到期號時間：ANCHOR_UTC_MS 對應 ANCHOR_PERIOD
-  // 注意：期號的時間是"開獎時間"，18:55的期 = 18:55開獎
-  // 所以現在18:56，18:55已開獎 → floor後就是18:55那期
-  const diffMs = twUtcMs - ANCHOR_UTC_MS;
-  const diffPeriods = Math.floor(diffMs / MS_PER_PERIOD);
-  return ANCHOR_PERIOD + diffPeriods;
-}
-
-function periodToTimeStr(period){
-  const ms = ANCHOR_UTC_MS + (period - ANCHOR_PERIOD) * MS_PER_PERIOD;
-  const d = new Date(ms - (new Date().getTimezoneOffset() + 480) * 60000 + (new Date().getTimezoneOffset() + 480) * 60000);
-  // 直接用 UTC+8 offset
-  const twMs = ms;
-  const h = Math.floor((twMs % (24*3600000)) / 3600000);
-  const m = Math.floor((twMs % 3600000) / 60000);
-  return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
+  return ANCHOR_PERIOD + Math.floor((Date.now() - ANCHOR_MS) / MS_PER_PERIOD);
 }
 
 function isOpenNow(){
   const tw = getTWNow();
   const t = tw.getHours() * 60 + tw.getMinutes();
-  return t >= OPEN_START_MIN && t <= OPEN_END_MIN;
+  return t >= OPEN_START && t <= OPEN_END;
 }
 
-// 時鐘
 function updateClock(){
   const tw = getTWNow();
   document.getElementById('tw-clock').textContent =
     `${String(tw.getHours()).padStart(2,'0')}:${String(tw.getMinutes()).padStart(2,'0')}:${String(tw.getSeconds()).padStart(2,'0')}`;
-
   const open = isOpenNow();
-  const latest = calcLatestDrawnPeriod();
-  document.getElementById('curr-period').textContent = open
-    ? `第 ${latest} 期`
-    : `第 ${latest} 期（非開盤）`;
-
+  document.getElementById('curr-period').textContent = `第 ${calcLatestDrawnPeriod()} 期`;
   const statusEl = document.getElementById('open-status');
   statusEl.textContent = open ? '🟢 開盤中' : '⛔ 未開盤';
   statusEl.className = 'period-status ' + (open ? 'open' : 'closed');
@@ -307,7 +272,25 @@ window.addEventListener('load', () => {
   }
 });
 
-// ── 自動抓取 ──
+// 解析 kuaishou1688 API 回傳格式
+function parseKuaishouData(raw){
+  try{
+    const data = typeof raw === 'string' ? JSON.parse(raw) : raw;
+    if(!data.success || !Array.isArray(data.data)) return [];
+    return data.data.map(item => {
+      const numbers = (item['一般獎號'] || []).map(Number).filter(n=>n>=1&&n<=80);
+      const superNum = item['超級獎號'] ? parseInt(item['超級獎號']) : null;
+      const period = String(item['期數']);
+      const datetime = item['開獎時間'] || '--:--';
+      if(numbers.length !== 20) return null;
+      return { period, datetime, numbers: numbers.sort((a,b)=>a-b), superNum };
+    }).filter(Boolean);
+  }catch(e){
+    console.error('parseKuaishouData error:', e);
+    return [];
+  }
+}
+
 let fetchTimer = null;
 
 async function autoFetch(){
@@ -318,82 +301,51 @@ async function autoFetch(){
   btn.disabled = true;
   btnText.innerHTML = '<div class="spinner"></div> 抓取中...';
   status.className = 'auto-status loading';
-  status.textContent = '查詢台彩官方資料...';
+  status.textContent = '連線中...';
   countdown.textContent = '';
 
-  try {
-    const latestPeriod = calcLatestDrawnPeriod();
-    const periods = [latestPeriod, latestPeriod - 1];
-    const draws = [];
+  try{
+    // 用 allorigins proxy 送 POST 給 kuaishou1688 API
+    // allorigins 只支援 GET，所以用 raw GET 加上 URL 參數方式
+    // 直接嘗試 POST via fetch（kuaishou1688 之前測試成功）
+    let draws = [];
 
-    for(const period of periods){
-      const url = `https://api.taiwanlottery.com/TLCAPIWeB/Lottery/BingoBingo?period=${period}`;
-      const resp = await fetch(url, {
-        headers:{ 'Accept':'application/json', 'Referer':'https://www.taiwanlottery.com/' }
+    // 方法1: 直接 POST（之前第3個測試成功的方式）
+    try{
+      const r = await fetch(API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ count: 2 })
       });
-      if(!resp.ok) throw new Error(`期號 ${period} HTTP ${resp.status}`);
-      const data = await resp.json();
-      const draw = parseTaiwanAPI(data, period);
-      if(draw) draws.push(draw);
+      if(r.ok){
+        const d = await r.json();
+        draws = parseKuaishouData(d);
+      }
+    }catch(e1){
+      // 方法2: 透過 allorigins proxy
+      const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(API_URL + '?count=2')}`;
+      const r2 = await fetch(proxyUrl);
+      if(r2.ok){
+        const d2 = await r2.json();
+        const content = typeof d2.contents === 'string' ? d2.contents : JSON.stringify(d2.contents);
+        draws = parseKuaishouData(content);
+      }
     }
 
-    if(!draws.length) throw new Error('無法解析開獎資料，請查看 Console');
+    if(!draws.length) throw new Error('無法取得開獎資料，請改用手動輸入');
+
     loadDraws(draws);
     status.className = 'auto-status ok';
     status.textContent = `✅ 成功！第 ${draws.map(d=>d.period).join('、')} 期`;
     startCountdown();
 
-  } catch(e) {
+  }catch(e){
     status.className = 'auto-status err';
     status.textContent = `❌ ${e.message}`;
     countdown.textContent = '請展開下方手動輸入';
-  } finally {
+  }finally{
     btn.disabled = false;
     btnText.textContent = '⚡ 立即抓取最新2期開獎';
-  }
-}
-
-function parseTaiwanAPI(data, period){
-  try {
-    const content = data.content || data.data || data;
-    const arr = Array.isArray(content) ? content : [content];
-    const item = arr[0];
-    if(!item) return null;
-
-    let numbers = [];
-    let superNum = null;
-
-    // 嘗試 no1~no20 格式
-    for(let i=1;i<=20;i++){
-      const v = item[`no${i}`] || item[`num${i}`] || item[`ball${i}`];
-      if(v) numbers.push(parseInt(v));
-    }
-
-    // 嘗試陣列格式
-    if(!numbers.length){
-      if(Array.isArray(item.drawNumbers)) numbers = item.drawNumbers.map(Number);
-      else if(Array.isArray(item.balls)) numbers = item.balls.map(Number);
-      else if(Array.isArray(item.numbers)) numbers = item.numbers.map(Number);
-      else if(Array.isArray(item.lotteryNumbers)) numbers = item.lotteryNumbers.map(Number);
-    }
-
-    // 超級號碼
-    const superFields = ['superNo','superNumber','specialNo','superBall','superNum'];
-    for(const f of superFields){
-      if(item[f]){ superNum = parseInt(item[f]); break; }
-    }
-
-    if(numbers.length !== 20) return null;
-
-    return {
-      period: String(item.period || item.lotteryPeriod || item.issueNo || period),
-      datetime: periodToTimeStr(period),
-      numbers: numbers.sort((a,b)=>a-b),
-      superNum
-    };
-  } catch(e) {
-    console.error('parseTaiwanAPI error:', e, data);
-    return null;
   }
 }
 
@@ -401,24 +353,23 @@ function startCountdown(){
   const el = document.getElementById('auto-countdown');
   if(fetchTimer) clearInterval(fetchTimer);
   let secs = 300;
-  fetchTimer = setInterval(() => {
+  fetchTimer = setInterval(()=>{
     secs--;
-    if(secs <= 0){
+    if(secs<=0){
       clearInterval(fetchTimer);
-      el.style.color = 'var(--orange)';
-      el.textContent = '⏰ 已超過5分鐘，建議重新抓取！';
-    } else {
-      el.style.color = '';
-      el.textContent = `距下次開獎約 ${Math.floor(secs/60)}分${String(secs%60).padStart(2,'0')}秒`;
+      el.style.color='var(--orange)';
+      el.textContent='⏰ 已超過5分鐘，建議重新抓取！';
+    }else{
+      el.style.color='';
+      el.textContent=`距下次開獎約 ${Math.floor(secs/60)}分${String(secs%60).padStart(2,'0')}秒`;
     }
-  }, 1000);
+  },1000);
 }
 
 function toggleManualSection(){
-  const sec = document.getElementById('manual-section');
-  const arrow = document.getElementById('manual-arrow');
+  const sec=document.getElementById('manual-section');
   sec.classList.toggle('open');
-  arrow.textContent = sec.classList.contains('open') ? '▲' : '▼';
+  document.getElementById('manual-arrow').textContent=sec.classList.contains('open')?'▲':'▼';
 }
 function switchInputTab(tab){
   ['pc','mobile','paste'].forEach(t=>{
@@ -458,7 +409,7 @@ const bmCode=`(function(){
 })();`;
 document.getElementById('bm-link').href='javascript:'+encodeURIComponent(bmCode);
 
-let selected=new Set(), prevDrawNums=new Set(), prevSuperNum=null, recentDraws=[];
+let selected=new Set(),prevDrawNums=new Set(),prevSuperNum=null,recentDraws=[];
 
 function loadDraws(draws){
   recentDraws=draws.slice(0,2);
@@ -467,7 +418,7 @@ function loadDraws(draws){
   renderDraws();buildPickGrid();updateSelected();
 }
 
-let manualChosen=new Set(), manualSuper=null;
+let manualChosen=new Set(),manualSuper=null;
 function buildManualGrid(){
   const g=document.getElementById('manual-grid');g.innerHTML='';
   for(let i=1;i<=80;i++){
@@ -573,7 +524,7 @@ function buildPickGrid(){
     const isSel=selected.has(i),isPrev=prevDrawNums.has(i),isSuper=i===prevSuperNum;
     b.className='num-btn'+(isSel?' selected':'')+(full&&!isSel?' disabled':'');
     if(isPrev&&!isSel)b.style.boxShadow=`0 0 0 2px ${isSuper?'var(--super)':'var(--pink-bg)'}`;
-    b.textContent=String(i).padStart(2,'0');
+    b.textContent=String(i).padStart(2,'00');
     b.onclick=()=>toggleNum(i);
     g.appendChild(b);
   }
