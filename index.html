@@ -220,6 +220,7 @@
     <div class="notice">⚠️ 樂透為合法娛樂，號碼統計僅供參考，開獎結果完全隨機。</div>
 
     <!-- 儲存選號 -->
+    <div style="font-size:11px;color:#dde4ec;letter-spacing:2px;margin:14px 0 6px;padding-top:14px;border-top:1px solid rgba(255,255,255,.1);">📝 選號記錄</div>
     <div class="saved-box">
       <div class="saved-title">
         📝 已儲存選號 <span id="saved-count">0</span>/10
@@ -384,7 +385,7 @@ function loadDraws(draws){
   recentDraws=draws.slice(0,2);
   prevDrawNums=new Set(recentDraws[0].numbers);
   prevSuperNum=recentDraws[0].superNum;
-  renderDraws();buildPickGrid();updateSelected();
+  renderDraws();buildPickGrid();updateSelected();renderSaved();
 }
 
 let manualChosen=new Set(), manualSuper=null;
@@ -419,7 +420,7 @@ function addManualDraw(){
   buildManualGrid();
   msgEl.className='msg ok';msgEl.textContent='✅ 已加入！';
   setTimeout(()=>msgEl.textContent='',3000);
-  renderDraws();buildPickGrid();updateSelected();
+  renderDraws();buildPickGrid();updateSelected();renderSaved();
 }
 buildManualGrid();
 
@@ -463,7 +464,7 @@ function clearDraws(){
   if(fetchTimer){clearInterval(fetchTimer);fetchTimer=null;}
   document.getElementById('auto-status').textContent='';
   document.getElementById('auto-countdown').textContent='';
-  renderDraws();buildPickGrid();updateSelected();
+  renderDraws();buildPickGrid();updateSelected();renderSaved();
 }
 
 function renderDraws(){
