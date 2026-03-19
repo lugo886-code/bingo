@@ -18,12 +18,6 @@
   .subtitle{text-align:center;font-size:11px;color:#555;margin-bottom:16px;letter-spacing:3px;}
   .pwa-hint{background:#0d0d1a;border:1px solid #1e1e3a;border-radius:8px;padding:8px 12px;margin-bottom:10px;font-size:10px;color:#555;text-align:center;display:none;}
   .pwa-hint.show{display:block;}
-  .period-bar{background:#0d0d1a;border:1px solid #1e1e3a;border-radius:10px;padding:10px 14px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;}
-  .period-info{font-size:11px;color:#666;}
-  .period-info b{color:var(--gold);}
-  .period-status{font-size:10px;padding:3px 8px;border-radius:10px;font-weight:700;}
-  .period-status.open{background:rgba(78,205,196,.15);color:var(--cold);border:1px solid rgba(78,205,196,.3);}
-  .period-status.closed{background:rgba(100,100,100,.15);color:#555;border:1px solid #222;}
   .auto-box{background:#0d0d1a;border:1px solid #1e1e3a;border-radius:10px;padding:14px;margin-bottom:10px;}
   .auto-title{font-size:11px;color:#666;letter-spacing:1px;margin-bottom:10px;}
   .auto-btn{width:100%;padding:13px;border:none;border-radius:8px;background:var(--gold);color:#000;font-size:15px;font-weight:700;cursor:pointer;font-family:'Microsoft JhengHei','PingFang TC',sans-serif;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .2s;}
@@ -124,18 +118,10 @@
     <div class="subtitle">台彩賓果賓果 · 選號工具</div>
     <div class="pwa-hint" id="pwa-hint"></div>
 
-    <div class="period-bar">
-      <div class="period-info">
-        台灣時間 <b id="tw-clock">--:--:--</b>　
-        最新已開獎 <b id="curr-period">計算中...</b>
-      </div>
-      <div class="period-status" id="open-status">--</div>
-    </div>
-
     <div class="auto-box">
-      <div class="auto-title">🚀 自動抓取最新2期開獎</div>
+      <div class="auto-title">🚀 開獎資料（每5分鐘自動更新）</div>
       <button class="auto-btn" id="auto-btn" onclick="autoFetch()">
-        <span id="auto-btn-text">⚡ 立即抓取最新2期開獎</span>
+        <span id="auto-btn-text">↻ 立即重新抓取</span>
       </button>
       <div class="auto-status" id="auto-status"></div>
       <div class="auto-countdown" id="auto-countdown"></div>
@@ -220,45 +206,7 @@
 
 <script>
 const MAX_PICK = 10;
-
-// kuaishou1688 API via allorigins proxy (POST)
 const API_URL = 'https://bingo.kuaishou1688.com/api/get_data';
-const PROXY_URL = 'https://api.allorigins.win/get?url=' + encodeURIComponent(API_URL);
-
-// 期號計算（定位點：2026/03/18 18:55 台灣 = 第 115015571 期）
-const ANCHOR_PERIOD = 115015571;
-const ANCHOR_MS = new Date('2026-03-18T18:55:00+08:00').getTime();
-const MS_PER_PERIOD = 5 * 60 * 1000;
-const OPEN_START = 7 * 60 + 5;
-const OPEN_END   = 23 * 60 + 55;
-
-function getTWNow(){
-  const now = new Date();
-  return new Date(now.getTime() + (now.getTimezoneOffset() + 480) * 60000);
-}
-
-function calcLatestDrawnPeriod(){
-  return ANCHOR_PERIOD + Math.floor((Date.now() - ANCHOR_MS) / MS_PER_PERIOD);
-}
-
-function isOpenNow(){
-  const tw = getTWNow();
-  const t = tw.getHours() * 60 + tw.getMinutes();
-  return t >= OPEN_START && t <= OPEN_END;
-}
-
-function updateClock(){
-  const tw = getTWNow();
-  document.getElementById('tw-clock').textContent =
-    `${String(tw.getHours()).padStart(2,'0')}:${String(tw.getMinutes()).padStart(2,'0')}:${String(tw.getSeconds()).padStart(2,'0')}`;
-  const open = isOpenNow();
-  document.getElementById('curr-period').textContent = `第 ${calcLatestDrawnPeriod()} 期`;
-  const statusEl = document.getElementById('open-status');
-  statusEl.textContent = open ? '🟢 開盤中' : '⛔ 未開盤';
-  statusEl.className = 'period-status ' + (open ? 'open' : 'closed');
-}
-setInterval(updateClock, 1000);
-updateClock();
 
 // PWA
 window.addEventListener('load', () => {
@@ -272,7 +220,7 @@ window.addEventListener('load', () => {
   }
 });
 
-// 解析 kuaishou1688 API 回傳格式
+// 解析 kuaishou1688 API 格式
 function parseKuaishouData(raw){
   try{
     const data = typeof raw === 'string' ? JSON.parse(raw) : raw;
@@ -285,10 +233,7 @@ function parseKuaishouData(raw){
       if(numbers.length !== 20) return null;
       return { period, datetime, numbers: numbers.sort((a,b)=>a-b), superNum };
     }).filter(Boolean);
-  }catch(e){
-    console.error('parseKuaishouData error:', e);
-    return [];
-  }
+  }catch(e){ return []; }
 }
 
 let fetchTimer = null;
@@ -305,35 +250,27 @@ async function autoFetch(){
   countdown.textContent = '';
 
   try{
-    // 用 allorigins proxy 送 POST 給 kuaishou1688 API
-    // allorigins 只支援 GET，所以用 raw GET 加上 URL 參數方式
-    // 直接嘗試 POST via fetch（kuaishou1688 之前測試成功）
     let draws = [];
 
-    // 方法1: 直接 POST（之前第3個測試成功的方式）
+    // 方法1：直接 POST
     try{
       const r = await fetch(API_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ count: 2 })
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({count:2})
       });
-      if(r.ok){
-        const d = await r.json();
-        draws = parseKuaishouData(d);
-      }
+      if(r.ok){ draws = parseKuaishouData(await r.json()); }
     }catch(e1){
-      // 方法2: 透過 allorigins proxy
-      const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(API_URL + '?count=2')}`;
+      // 方法2：allorigins proxy
+      const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(API_URL+'?count=2')}`;
       const r2 = await fetch(proxyUrl);
       if(r2.ok){
         const d2 = await r2.json();
-        const content = typeof d2.contents === 'string' ? d2.contents : JSON.stringify(d2.contents);
-        draws = parseKuaishouData(content);
+        draws = parseKuaishouData(d2.contents);
       }
     }
 
     if(!draws.length) throw new Error('無法取得開獎資料，請改用手動輸入');
-
     loadDraws(draws);
     status.className = 'auto-status ok';
     status.textContent = `✅ 成功！第 ${draws.map(d=>d.period).join('、')} 期`;
@@ -356,12 +293,11 @@ function startCountdown(){
   fetchTimer = setInterval(()=>{
     secs--;
     if(secs<=0){
-      clearInterval(fetchTimer);
-      el.style.color='var(--orange)';
-      el.textContent='⏰ 已超過5分鐘，建議重新抓取！';
+      el.textContent='';
+      // 時間到由 setInterval(autoFetch) 自動觸發，不需要手動提示
     }else{
       el.style.color='';
-      el.textContent=`距下次開獎約 ${Math.floor(secs/60)}分${String(secs%60).padStart(2,'0')}秒`;
+      el.textContent=`⏱ 下次自動更新：${Math.floor(secs/60)}分${String(secs%60).padStart(2,'0')}秒`;
     }
   },1000);
 }
@@ -376,6 +312,13 @@ function switchInputTab(tab){
     document.getElementById('tab-'+t).classList.toggle('active',t===tab);
     document.getElementById('panel-'+t).classList.toggle('hidden',t!==tab);
   });
+  // 切到手動點選時，預設帶入最新期號
+  if(tab==='mobile'){
+    const periodInput = document.getElementById('m-period');
+    if(!periodInput.value && recentDraws.length){
+      periodInput.value = parseInt(recentDraws[0].period) + 1;
+    }
+  }
 }
 
 const bmCode=`(function(){
@@ -409,7 +352,7 @@ const bmCode=`(function(){
 })();`;
 document.getElementById('bm-link').href='javascript:'+encodeURIComponent(bmCode);
 
-let selected=new Set(),prevDrawNums=new Set(),prevSuperNum=null,recentDraws=[];
+let selected=new Set(), prevDrawNums=new Set(), prevSuperNum=null, recentDraws=[];
 
 function loadDraws(draws){
   recentDraws=draws.slice(0,2);
@@ -418,7 +361,7 @@ function loadDraws(draws){
   renderDraws();buildPickGrid();updateSelected();
 }
 
-let manualChosen=new Set(),manualSuper=null;
+let manualChosen=new Set(), manualSuper=null;
 function buildManualGrid(){
   const g=document.getElementById('manual-grid');g.innerHTML='';
   for(let i=1;i<=80;i++){
@@ -506,7 +449,7 @@ function renderDraws(){
   const cards=recentDraws.map((d,i)=>`
     <div class="draw-card${i===0?' latest':''}">
       <div class="draw-header">
-        <span class="draw-period">${i===0?'🔴 ':''}${d.period!=='未知'?'第'+d.period+'期':'-'}</span>
+        <span class="draw-period">${i===0?'🔴 ':''}第${d.period}期</span>
         <span class="draw-time">${d.datetime}</span>
       </div>
       <div class="draw-balls">${d.numbers.map(n=>`<div class="ball${n===d.superNum?' super':''}">${String(n).padStart(2,'0')}</div>`).join('')}</div>
@@ -524,7 +467,7 @@ function buildPickGrid(){
     const isSel=selected.has(i),isPrev=prevDrawNums.has(i),isSuper=i===prevSuperNum;
     b.className='num-btn'+(isSel?' selected':'')+(full&&!isSel?' disabled':'');
     if(isPrev&&!isSel)b.style.boxShadow=`0 0 0 2px ${isSuper?'var(--super)':'var(--pink-bg)'}`;
-    b.textContent=String(i).padStart(2,'00');
+    b.textContent=String(i).padStart(2,'0');
     b.onclick=()=>toggleNum(i);
     g.appendChild(b);
   }
@@ -561,6 +504,10 @@ function randomPick(){
 function clearPick(){selected.clear();updateSelected();buildPickGrid();}
 
 buildPickGrid();updateSelected();
+
+// 頁面載入自動抓，每5分鐘自動更新
+autoFetch();
+setInterval(autoFetch, 5 * 60 * 1000);
 </script>
 </body>
 </html>
