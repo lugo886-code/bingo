@@ -490,10 +490,47 @@ function updateSelected(){
 }
 function smartPick(){
   selected.clear();
-  const notPrev=Array.from({length:80},(_,i)=>i+1).filter(n=>!prevDrawNums.has(n)).sort(()=>Math.random()-.5);
-  const prev=[...prevDrawNums].sort(()=>Math.random()-.5);
-  [...notPrev.slice(0,8),...prev.slice(0,2)].forEach(n=>selected.add(n));
-  if(selected.size<MAX_PICK)notPrev.forEach(n=>{if(selected.size<MAX_PICK)selected.add(n);});
+  if(recentDraws.length < 2){
+    // 只有1期資料，退回簡單邏輯
+    const notPrev=Array.from({length:80},(_,i)=>i+1).filter(n=>!prevDrawNums.has(n)).sort(()=>Math.random()-.5);
+    const prev=[...prevDrawNums].sort(()=>Math.random()-.5);
+    [...notPrev.slice(0,7),...prev.slice(0,3)].forEach(n=>selected.add(n));
+    if(selected.size<MAX_PICK)notPrev.forEach(n=>{if(selected.size<MAX_PICK)selected.add(n);});
+    updateSelected();buildPickGrid();
+    return;
+  }
+
+  const set1 = new Set(recentDraws[0].numbers); // 最新一期
+  const set2 = new Set(recentDraws[1].numbers); // 上上期
+
+  // 分三類
+  const bothNums   = []; // 2期都出現（完全避開）
+  const oneNumOnly = []; // 只出現1期（延續候選）
+  const noneNums   = []; // 2期都沒出現（新鮮候選）
+
+  for(let i=1;i<=80;i++){
+    const in1 = set1.has(i), in2 = set2.has(i);
+    if(in1 && in2)       bothNums.push(i);   // 兩期都有，避開
+    else if(in1 || in2)  oneNumOnly.push(i); // 只有一期
+    else                 noneNums.push(i);   // 兩期都沒有
+  }
+
+  // 隨機洗牌
+  noneNums.sort(()=>Math.random()-.5);
+  oneNumOnly.sort(()=>Math.random()-.5);
+
+  // 取7個新鮮 + 3個延續
+  [...noneNums.slice(0,7), ...oneNumOnly.slice(0,3)].forEach(n=>selected.add(n));
+
+  // 若不足10個（極端情況），從新鮮號碼補充
+  if(selected.size < MAX_PICK){
+    noneNums.forEach(n=>{ if(selected.size<MAX_PICK) selected.add(n); });
+  }
+  // 還不夠再從延續號碼補
+  if(selected.size < MAX_PICK){
+    oneNumOnly.forEach(n=>{ if(selected.size<MAX_PICK) selected.add(n); });
+  }
+
   updateSelected();buildPickGrid();
 }
 function randomPick(){
